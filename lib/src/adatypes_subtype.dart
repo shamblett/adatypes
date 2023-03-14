@@ -5,3 +5,14 @@
  * Copyright :  S.Hamblett
  */
 
+class Subtype {
+  Subtype(this.start, this.end, {int initialValue = 0}) {
+    value = initialValue;
+  }
+
+  final int end;
+
+  final int start;
+
+  int value = 0;
+}
