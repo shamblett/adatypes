@@ -6,8 +6,10 @@
  */
 
 abstract class Subtype {
-  Subtype.set(this.start, this.end, {int initialValue = 0}) {
+  Subtype.set(this.start, this.end,
+      {int initialValue = 0, strictTyping = false}) {
     _value = initialValue;
+    _strictTyping = strictTyping;
   }
 
   final int end;
@@ -16,6 +18,8 @@ abstract class Subtype {
 
   int _value = 0;
   int get value => _value;
+
+  bool _strictTyping = false;
 
   void call(int val) => _value = _boundsCheck(val);
 
@@ -40,16 +44,18 @@ abstract class Subtype {
   dynamic operator +(Object other) {
     if (other is int) {
       _boundsCheck(_value += other);
-    } else {
-      try {
-        _boundsCheck(_value += (other as Subtype).value);
-      } on ArgumentError {
-        rethrow;
-      } catch (e) {
+    } else if (_strictTyping) {
+      final tThis = runtimeType;
+      final tOther = other.runtimeType;
+      if (tThis != tOther) {
         throw ArgumentError(
-            'AdaTypes:Subtype - the type supplied is not derived from Subtype - $e',
+            'AdaTypes:Subtype - strict typing - the type supplied is different from the subject type',
             'other');
+      } else {
+        _boundsCheck(_value += (other as Subtype).value);
       }
+    } else {
+      _tryAssignment(other);
     }
     return this;
   }
@@ -64,5 +70,17 @@ abstract class Subtype {
           'value');
     }
     return val;
+  }
+
+  void _tryAssignment(Object other) {
+    try {
+      _boundsCheck(_value += (other as Subtype).value);
+    } on ArgumentError {
+      rethrow;
+    } catch (e) {
+      throw ArgumentError(
+          'AdaTypes:Subtype - the type supplied is not derived from Subtype - $e',
+          'other');
+    }
   }
 }

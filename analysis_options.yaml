@@ -5,10 +5,6 @@
 
 include: package:lints/recommended.yaml
 
-analyzer:
-  enable-experiment:
-    - nonfunction-type-aliases
-
 linter:
   rules:
 

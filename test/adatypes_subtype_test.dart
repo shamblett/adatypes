@@ -11,8 +11,13 @@ class AScore extends Subtype {
   AScore() : super.set(0, 20);
 }
 
+class AScoreStrict extends Subtype {
+  AScoreStrict() : super.set(0, 20, strictTyping: true);
+}
+
 typedef EggsInBox = ADozen;
 typedef PeasInPod = AScore;
+typedef PeasInPodStrict = AScoreStrict;
 
 void main() {
   test('Type equivalence', () {
@@ -79,5 +84,33 @@ void main() {
       print('Subtype + non Subtype - $e');
     }
     expect(exceptionRaised, isTrue);
+  });
+
+  test('Mixed - non strict', () {
+    var numEggs = EggsInBox();
+    numEggs(5);
+    var numPeas = PeasInPod();
+    numPeas(10);
+    numPeas += numEggs;
+    expect(numPeas == 15, isTrue);
+  });
+
+  test('Mixed - strict', () {
+    var exceptionRaised = false;
+    var numEggs = EggsInBox();
+    numEggs(5);
+    var numPeasStrict1 = PeasInPodStrict();
+    numPeasStrict1(10);
+    var numPeasStrict2 = PeasInPodStrict();
+    numPeasStrict2(5);
+    try {
+      numPeasStrict1 += numEggs;
+    } on ArgumentError catch (e) {
+      exceptionRaised = true;
+      print('Strict typing - $e');
+    }
+    expect(exceptionRaised, isTrue);
+    numPeasStrict1 += numPeasStrict2;
+    expect(numPeasStrict1 == 15, isTrue);
   });
 }
