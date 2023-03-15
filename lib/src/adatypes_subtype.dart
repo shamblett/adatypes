@@ -5,14 +5,19 @@
  * Copyright :  S.Hamblett
  */
 
-class Subtype {
-  Subtype(this.start, this.end, {int initialValue = 0}) {
-    value = initialValue;
+abstract class Subtype {
+  Subtype.set(this.start, this.end, {int initialValue = 0}) {
+    _value = initialValue;
   }
 
   final int end;
 
   final int start;
 
-  int value = 0;
+  int _value = 0;
+
+  void call(int val) => _value = val;
+
+  @override
+  String toString() => _value.toString();
 }
