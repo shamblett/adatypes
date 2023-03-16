@@ -1,2 +1,2 @@
 # adatypes
-A Dart implementation of various Ada types
+A Dart implementation of Ada types to support Medium articles such as this 
