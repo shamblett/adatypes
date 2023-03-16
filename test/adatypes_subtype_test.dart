@@ -30,6 +30,19 @@ void main() {
     expect(peasType == eggsType, isFalse);
   });
 
+  test('Uninitialised access', () {
+    var numEggs = EggsInBox();
+    var exceptionRaised = false;
+    try {
+      numEggs += 2;
+    } on StateError catch (e) {
+      exceptionRaised = true;
+      print(e);
+    }
+    expect(exceptionRaised, isTrue);
+    expect(numEggs.value, 0);
+  });
+
   test('Range check on initialisation', () {
     final numEggs = EggsInBox();
     var exceptionRaised = false;

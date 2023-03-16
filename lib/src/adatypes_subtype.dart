@@ -21,7 +21,12 @@ abstract class Subtype {
 
   bool _strictTyping = false;
 
-  void call(int val) => _value = _boundsCheck(val);
+  bool _initialised = false;
+
+  void call(int val) {
+    _value = _boundsCheck(val);
+    _initialised = true;
+  }
 
   @override
   String toString() => _value.toString();
@@ -43,7 +48,7 @@ abstract class Subtype {
 
   dynamic operator +(Object other) {
     if (other is int) {
-      _boundsCheck(_value += other);
+      _operationValid(_value += other);
     } else if (_strictTyping) {
       final tThis = runtimeType;
       final tOther = other.runtimeType;
@@ -52,7 +57,7 @@ abstract class Subtype {
             'AdaTypes:Subtype - strict typing - the type supplied is different from the subject type',
             'other');
       } else {
-        _boundsCheck(_value += (other as Subtype).value);
+        _operationValid(_value += (other as Subtype).value);
       }
     } else {
       _tryAssignment(other);
@@ -72,9 +77,19 @@ abstract class Subtype {
     return val;
   }
 
+  int _operationValid(int val) {
+    if (!_initialised) {
+      _value = 0;
+      throw StateError(
+          'AdaTypes:Subtype - the subtype has not been assigned an initial value');
+    }
+    _boundsCheck(val);
+    return val;
+  }
+
   void _tryAssignment(Object other) {
     try {
-      _boundsCheck(_value += (other as Subtype).value);
+      _operationValid(_value += (other as Subtype).value);
     } on ArgumentError {
       rethrow;
     } catch (e) {
